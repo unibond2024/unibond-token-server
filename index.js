@@ -2,6 +2,7 @@ const express = require("express");
 const { RtcTokenBuilder, RtcRole } = require("agora-access-token");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 
 require("dotenv").config();
 
@@ -14,8 +15,12 @@ const PORT = process.env.port || 5000;
 const APP_ID = process.env.AGORA_APP_ID;
 const APP_CERTIFICATE = process.env.AGORA_APP_CERTIFICATE;
 
+const serviceAccount = JSON.parse(
+  fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)
+);
+
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const nocache = (req, res, next) => {
