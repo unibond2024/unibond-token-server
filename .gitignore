@@ -1,0 +1,6 @@
+package-lock.json
+unibond-e4f44-firebase-adminsdk-hfia3-c97cd4bfef.json
+node_modules/*
+.idea/*
+
+.env

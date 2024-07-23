@@ -1,13 +1,22 @@
 const express = require("express");
 const { RtcTokenBuilder, RtcRole } = require("agora-access-token");
+const admin = require("firebase-admin");
+const bodyParser = require("body-parser");
 
 require("dotenv").config();
 
 const app = express();
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const PORT = process.env.port || 5000;
 const APP_ID = process.env.AGORA_APP_ID;
 const APP_CERTIFICATE = process.env.AGORA_APP_CERTIFICATE;
+
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
 
 const nocache = (req, res, next) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
@@ -61,7 +70,34 @@ const generateAccessToken = (req, res) => {
   return res.json({ token: token });
 };
 
+const sendPushNotification = (req, res) => {
+  const { token, title, body } = req.body;
+
+  if (!token || !title || !body) {
+    return res.status(400).send("Token, title, and body are required");
+  }
+
+  const message = {
+    notification: {
+      title,
+      body,
+    },
+    token,
+  };
+
+  admin
+    .messaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).send("Notification sent successfully: " + response);
+    })
+    .catch((error) => {
+      res.status(500).send("Error sending notification: " + error);
+    });
+};
+
 app.get("/access_token", nocache, generateAccessToken);
+app.post("/send_notification", nocache, sendPushNotification);
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`);
