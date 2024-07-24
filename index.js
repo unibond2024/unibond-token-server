@@ -76,16 +76,20 @@ const generateAccessToken = (req, res) => {
 };
 
 const sendPushNotification = (req, res) => {
-  const { token, title, body } = req.body;
+  const { token, title, body, callData } = req.body;
 
-  if (!token || !title || !body) {
-    return res.status(400).send("Token, title, and body are required");
+  if (!token || !title || !body || !callData) {
+    return res.status(400).send("Token, title, body, callData are required");
   }
 
   const message = {
     notification: {
       title,
       body,
+    },
+    data: {
+      callData: JSON.stringify(callData),
+      userId: callData.called, // Include userId to match the call recipient
     },
     token,
   };
