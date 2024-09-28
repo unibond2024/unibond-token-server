@@ -108,7 +108,7 @@ const sendPushNotification = (req, res) => {
 const sendMessageNotification = (req, res) => {
   const { title, body, userId, chatDocId } = req.body;
 
-  if (!title || !body || userId || chatDocId) {
+  if (!title || !body || !userId || !chatDocId) {
     return res.status(400).send("title, body, userId,chatDocId are required");
   }
 
