@@ -105,8 +105,38 @@ const sendPushNotification = (req, res) => {
     });
 };
 
+const sendMessageNotification = (req, res) => {
+  const { title, body, userId, chatDocId } = req.body;
+
+  if (!title || !body || userId || chatDocId) {
+    return res.status(400).send("title, body, userId,chatDocId are required");
+  }
+
+  const message = {
+    notification: {
+      title,
+      body,
+    },
+    data: {
+      userId, // Include userId to match user
+      chatDocId,
+    },
+  };
+
+  admin
+    .messaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).send("Notification sent successfully: " + response);
+    })
+    .catch((error) => {
+      res.status(500).send("Error sending notification: " + error);
+    });
+};
+
 app.get("/access_token", nocache, generateAccessToken);
 app.post("/send_notification", nocache, sendPushNotification);
+app.post("/send_message", nocache, sendMessageNotification);
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`);
