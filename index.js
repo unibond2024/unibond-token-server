@@ -106,10 +106,13 @@ const sendPushNotification = (req, res) => {
 };
 
 const sendMessageNotification = (req, res) => {
-  const { token, title, body, userId, chatDocId } = req.body;
+  const { token, title, body, userId, chatDocId, friendName, friendPic } =
+    req.body;
 
-  if (!token || !title || !body || !userId || !chatDocId) {
-    return res.status(400).send("title, body, userId,chatDocId are required");
+  if (!token || !title || !body || !userId || !chatDocId || !friendName) {
+    return res
+      .status(400)
+      .send("title, body, userId,chatDocId , friendName,  are required");
   }
 
   const message = {
@@ -120,6 +123,8 @@ const sendMessageNotification = (req, res) => {
     data: {
       userId, // Include userId to match user
       chatDocId,
+      friendName,
+      friendPic,
     },
     token,
   };
